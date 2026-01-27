@@ -10,5 +10,7 @@ __pycache__/
 *.tsv
 *.csv
 
+!public/data/inventory.tsv
+
 # Streamlit cache
 .streamlit/secrets.toml
