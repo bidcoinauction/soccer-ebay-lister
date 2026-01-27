@@ -13,7 +13,6 @@ export type Card = {
   brand: string;
   cardSet: string;
 
-  // derived
   year: string;
   serial: string;
   isAuto: boolean;
@@ -58,7 +57,7 @@ function parseTSV(tsv: string): Card[] {
 
     const cardName = get(row, ["Card Name"]);
     const playerName = get(row, ["Player Name"]);
-    const team = get(row, ["Team", "Team "]); // trailing-space variant
+    const team = get(row, ["Team", "Team "]);
     const league = get(row, ["League"]);
     const cardSet = get(row, ["Card Set"]);
     const features = get(row, ["Features"]);
@@ -87,35 +86,22 @@ function parseTSV(tsv: string): Card[] {
       isAuto,
     });
   }
-
   return out;
 }
 
 export async function fetchInventory(): Promise<Card[]> {
   const res = await fetch("/data/inventory.tsv", { cache: "no-store" });
-  if (!res.ok) {
-    throw new Error(`Failed to load inventory.tsv (${res.status})`);
-  }
-  const tsv = await res.text();
-  return parseTSV(tsv);
+  if (!res.ok) throw new Error(`Failed to load /data/inventory.tsv (${res.status})`);
+  return parseTSV(await res.text());
 }
 
 export function buildEbayTitle(c: Card): string {
-  const parts = [
-    c.year,
-    c.cardSet,
-    c.playerName,
-    c.features,
-    c.serial ? `/${c.serial}` : "",
-    c.isAuto ? "AUTO" : "",
-  ]
+  const parts = [c.year, c.cardSet, c.playerName, c.features, c.serial ? `/${c.serial}` : "", c.isAuto ? "AUTO" : ""]
     .map(clean)
     .filter(Boolean);
 
-  // Remove duplicate year if cardSet already starts with year
-  if (parts.length >= 2 && parts[0] && parts[1].startsWith(parts[0])) {
-    parts.shift();
-  }
+  // remove duplicate year if set already starts with year
+  if (parts.length >= 2 && parts[0] && parts[1].startsWith(parts[0])) parts.shift();
 
   return clean(parts.join(" ")).slice(0, 80);
 }
