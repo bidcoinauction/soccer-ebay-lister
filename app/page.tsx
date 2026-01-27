@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { Card, fetchInventory, buildEbayDescription, buildEbayTitle } from "@/lib/inventory";
+import { Card, fetchInventory, buildEbayDescription, buildEbayTitle } from "../lib/inventory";
 
 function uniq(values: string[]) {
   return Array.from(new Set(values.filter((v) => v && v.trim().length > 0))).sort((a, b) =>
